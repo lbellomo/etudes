@@ -9,7 +9,7 @@ def read_data(path_data: str) -> str:
 def build_layers(data: str, wide: int, tall: int) -> list[str]:
     layer_len = wide * tall
     number_layers = len(data) // (layer_len)
-    layers = [data[i * layer_len: (i + 1) * layer_len] for i in range(number_layers)]
+    layers = [data[i * layer_len : (i + 1) * layer_len] for i in range(number_layers)]
     return layers
 
 
@@ -29,7 +29,7 @@ def find_pixel(i: int, layers: list[str]) -> str:
 
 
 def solve_b(data: str, wide: int, tall: int) -> str:
-    layers = build_layers(data, wide=25, tall=6)
+    layers = build_layers(data, wide, tall)
     img = "".join(find_pixel(i, layers) for i in range(wide * tall))
     img = img.replace("0", " ")
     return img
@@ -45,3 +45,15 @@ if __name__ == "__main__":
     print("sol b = ")
     for i in range(tall):
         print(sol_b[i * wide : (i + 1) * wide])
+
+
+def test_build_layers():
+    data = "123456789012"
+    layers = build_layers(data, 3, 2)
+    assert layers == ["123456", "789012"]
+
+
+def test_solve_b():
+    data = "0222112222120000"
+    img = solve_b(data, 2, 2)
+    assert img == " 11 "

@@ -1,5 +1,6 @@
 from fractions import Fraction
 from itertools import compress
+from typing import Iterable
 
 import pytest  # type: ignore
 
@@ -25,7 +26,7 @@ def diff_pos(a: Point, b: Point) -> Point:
     return (a[0] - b[0], a[1] - b[1])
 
 
-def detect_asteroids(asteroid: Point, others: list[Point]) -> int:
+def detect_asteroids(asteroid: Point, others: Iterable[Point]) -> int:
     # find the manhatan distance from center
     distances = [diff_pos(asteroid, other) for other in others]
 
@@ -53,7 +54,7 @@ def detect_asteroids(asteroid: Point, others: list[Point]) -> int:
     return total
 
 
-def solve_a(data: list[str]) -> int:
+def solve_a(data: list[str]) -> tuple[tuple[int, int], int]:
     asteroids = read_asteroids(data)
 
     shape = len(asteroids)
@@ -66,7 +67,7 @@ def solve_a(data: list[str]) -> int:
         total = detect_asteroids(asteroid, others)
         detected[asteroid] = total
 
-    best = max(detected, key=detected.get)
+    best = max(detected, key=lambda k: detected[k])
     return best, detected[best]
 
 
@@ -136,6 +137,7 @@ example_4 = """.#..##.###...#######
 #.#.#.#####.####.###
 ###.##.####.##.#..##
 """.split()
+
 
 @pytest.mark.parametrize(
     "test_input,expected",

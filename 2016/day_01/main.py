@@ -1,19 +1,22 @@
+from typing import Iterator, Tuple, Optional
 from collections import deque
 
+Data = Iterator[Tuple[str, int]]
 
-def read_data(path):
+
+def read_data(path: str) -> str:
     with open(path) as f:
         return f.read()
 
 
-def parse_data(raw_data):
+def parse_data(raw_data: str) -> Data:
     for i in raw_data.split(","):
         i = i.strip()
         turn_direction, magnitude = i[0], int(i[1:])
         yield turn_direction, magnitude
 
 
-def solve_a(data):
+def solve_a(data: Data) -> int:
     directions = deque(["N", "E", "S", "W"], maxlen=4)
     directions_values = {"N": [0, 1], "E": [1, 0], "S": [0, -1], "W": [-1, 0]}
     pos = [0, 0]
@@ -35,7 +38,7 @@ def solve_a(data):
     return sum(abs(i) for i in pos)
 
 
-def solve_b(data):
+def solve_b(data: Data) -> Optional[int]:
     directions = deque(["N", "E", "S", "W"], maxlen=4)
     directions_values = {"N": [0, 1], "E": [1, 0], "S": [0, -1], "W": [-1, 0]}
     pos = [0, 0]
@@ -61,6 +64,8 @@ def solve_b(data):
                 return sum(abs(i) for i in pos)
             else:
                 know_pos.update([pos_str])
+
+    return None
 
 
 if __name__ == "__main__":

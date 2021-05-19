@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict, Union, Any
+from typing import List, Tuple, Dict, Union, Callable
 from dataclasses import dataclass, field
 
 Register = str
@@ -16,8 +16,8 @@ def read_data(path: str) -> Data:
         return [line.strip() for line in f.readlines()]
 
 
-def parse_data(data: Data) -> List[Tuple[Any, List[Union[str, int]]]]:
-    funcs = dict(cpy=cpy, inc=inc, dec=dec, jnz=jnz)
+def parse_data(data: Data) -> List[Tuple[Callable, List[Union[str, int]]]]:
+    funcs: Dict[str, Callable] = dict(cpy=cpy, inc=inc, dec=dec, jnz=jnz)
 
     instructions = []
     for raw_line in data:

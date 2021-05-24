@@ -1,5 +1,5 @@
 import hashlib
-from typing import List
+from typing import List, Dict
 
 import pytest
 
@@ -31,7 +31,7 @@ def get_choices(passcode: str, room: str) -> List[str]:
     return choices
 
 
-def solve_a(states):
+def solve_a(states: List[Dict[str, str]]) -> str:
     while True:
         new_states = []
         for state in states:

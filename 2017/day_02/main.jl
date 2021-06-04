@@ -1,4 +1,4 @@
-using Combinatorics
+import Combinatorics: permutations
 
 function parsedata(raw_data)
     data = []

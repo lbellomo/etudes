@@ -1,5 +1,7 @@
 from collections import Counter
 
+Data = list[str]
+
 with open("inputs/day_03.txt") as f:
     data = [line.strip() for line in f.readlines()]
 
@@ -14,7 +16,7 @@ epsilon_str = "".join(counter.most_common()[-1][0] for counter in counter_list)
 print("sol_a", int(gamma_str, 2) * int(epsilon_str, 2))
 
 
-def find_common(data, index, by_most_common):
+def find_common(data: Data, index: int, by_most_common: bool) -> str:
     counter = Counter([row[index] for row in data])
     if len(set(i[1] for i in counter.most_common())) == 1:
         if by_most_common:
@@ -28,7 +30,7 @@ def find_common(data, index, by_most_common):
             return counter.most_common()[-1][0]
 
 
-def filter_by_common(data, by_most_common):
+def filter_by_common(data: Data, by_most_common: bool) -> str:
     data_tmp = data[:]
     len_row = len(data_tmp[0])
 

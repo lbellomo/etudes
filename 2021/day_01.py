@@ -1,6 +1,6 @@
 import numpy as np
 
-sonar = np.loadtxt("inputs/day_1.txt")
+sonar = np.loadtxt("inputs/day_01.txt")
 
 sol_a = (sonar[:-1] < sonar[1:]).sum()
 # also from @asmeurer:

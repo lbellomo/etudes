@@ -23,8 +23,7 @@ def read_data(path_data: str) -> list[str]:
         return [line.strip() for line in f.readlines()]
 
 
-def parse_line(line: str, pos_to_num: MappingPos) -> str:
-    pos = (0, 0)
+def parse_line(pos: tuple[int, int], line: str, pos_to_num: MappingPos) -> tuple[int, int]:
     for char in line:
         vec = char_to_vec[char]
         # new_pos = (pos[0] + vec[0], pos[1] + vec[1])
@@ -34,16 +33,37 @@ def parse_line(line: str, pos_to_num: MappingPos) -> str:
         if pos_to_num.get(new_pos):
             pos = new_pos
 
-    return pos_to_num[pos]
+    return pos
 
 
-def solve(data: list[str], pos_to_num: MappingPos) -> str:
-    return "".join([parse_line(line, pos_to_num) for line in data])
+def solve(data: list[str], pos_to_num: MappingPos, init_pos: tuple[int, int]) -> str:
+    pos = init_pos
+    result = []
+    for line in data:
+        pos = parse_line(pos, line, pos_to_num)
+        result.append(pos)
+
+    return "".join(pos_to_num[pos] for pos in result)
 
 
 if __name__ == "__main__":
     data = read_data("input.txt")
-    sol_a = solve(data, pos_to_num_simple)
-    sol_b = solve(data, pos_to_num_complex)
+    sol_a = solve(data, pos_to_num_simple, (0, 0))
+    sol_b = solve(data, pos_to_num_complex, (-2, 0))
     print(f"sol_a: {sol_a}")
     print(f"sol_b: {sol_b}")
+
+
+test_data = """
+ULL
+RRDDD
+LURDL
+UUUUD""".split()
+
+
+def test_solve_simple():
+    assert solve(test_data, pos_to_num_simple, (0, 0)) == "1985"
+
+
+def test_solve_complex():
+    assert solve(test_data, pos_to_num_complex, (-2, 0)) == "5DB3"

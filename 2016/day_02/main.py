@@ -23,12 +23,15 @@ def read_data(path_data: str) -> list[str]:
         return [line.strip() for line in f.readlines()]
 
 
-def parse_line(pos: tuple[int, int], line: str, pos_to_num: MappingPos) -> tuple[int, int]:
+def parse_line(
+    pos: tuple[int, int], line: str, pos_to_num: MappingPos
+) -> tuple[int, int]:
     for char in line:
         vec = char_to_vec[char]
-        # new_pos = (pos[0] + vec[0], pos[1] + vec[1])
-        new_pos = tuple(pos_elem + vec_elem for pos_elem, vec_elem in zip(pos, vec))
-        new_pos = cast(tuple[int, int], new_pos)
+        new_pos = cast(
+            tuple[int, int],
+            tuple(pos_elem + vec_elem for pos_elem, vec_elem in zip(pos, vec)),
+        )
 
         if pos_to_num.get(new_pos):
             pos = new_pos

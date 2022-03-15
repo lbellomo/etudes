@@ -89,5 +89,5 @@ fn main() {
     let instructions = fs::read_to_string("input.txt").unwrap();
 
     println!("Sol a: {}", solve(&instructions, true));
-    println!("Sol a: {}", solve(&instructions, false));
+    println!("Sol b: {}", solve(&instructions, false));
 }

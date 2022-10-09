@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import Enum
 from copy import copy
 from dataclasses import dataclass
 
@@ -10,6 +11,14 @@ spell_cost = {
     "poison": 173,
     "recharge": 229,
 }
+
+
+class Spells(Enum):
+    MAGIC_MISSILE = "magic_missile"
+    DRAIN = "drain"
+    SHIELD = "shield"
+    POISON = "poison"
+    RECHARGE = "recharge"
 
 
 mage_hp = 50
@@ -104,7 +113,7 @@ class Mage:
             self.mana += 101
 
 
-def turn(mage: Mage, boss: Boss, spell: str) -> tuple[Mage, Boss]:
+def turn(mage: Mage, boss: Boss, spell: Spells) -> tuple[Mage, Boss]:
     if mage.is_hardmode:
         mage.hp -= 1
         if mage.hp <= 0:
@@ -115,10 +124,12 @@ def turn(mage: Mage, boss: Boss, spell: str) -> tuple[Mage, Boss]:
     if boss.hp <= 0:
         return mage, boss
 
+    mage_spell = mage.__getattribute__(f"cast_{spell.value}")
+
     try:
-        mage.__getattribute__(f"cast_{spell}")(boss)
+        mage_spell(boss)
     except TypeError:
-        mage.__getattribute__(f"cast_{spell}")()
+        mage_spell()
 
     if boss.hp <= 0:
         return mage, boss
@@ -136,14 +147,13 @@ def turn(mage: Mage, boss: Boss, spell: str) -> tuple[Mage, Boss]:
 def solve(hardmode: bool) -> int:
     possible_mana_cost: list[int] = []
 
-    spells = ["magic_missile", "drain", "shield", "poison", "recharge"]
     states = [(Mage(is_hardmode=hardmode), Boss())]
 
     while states and len(possible_mana_cost) < 10:
 
         next_states = []
         for mage, boss in states:
-            for spell in spells:
+            for spell in Spells:
                 try:
                     next_states.append(turn(copy(mage), copy(boss), spell))
                 except ValueError:

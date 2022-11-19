@@ -1,0 +1,20 @@
+# fly.toml file generated for floral-frog-1403 on 2022-11-19T15:10:05-03:00
+
+app = "floral-frog-1403"
+kill_signal = "SIGINT"
+kill_timeout = 5
+processes = []
+
+[env]
+
+[experimental]
+  cmd = "./smoke_test_rust"
+  allowed_public_ports = []
+  auto_rollback = true
+
+[[services]]
+  internal_port = 7878
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = "7878"

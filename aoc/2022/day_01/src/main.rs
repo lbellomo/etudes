@@ -1,30 +1,26 @@
-use std::fs;
-use std::collections::HashMap;
+use itertools::Itertools;
+use std::cmp::Reverse;
 
 fn main() {
-    let raw_data = fs::read_to_string("input.txt").unwrap();
+    let input = include_str!("input.txt");
 
-    let mut elfs = HashMap::new();
-    let mut i = 0;
-    let mut count = 0;
-
-    for line in raw_data.split('\n') {
-        match line {
-            "" => {
-                elfs.insert(i, count);
-                i += 1;
-                count = 0;
+    let top_elfs = input
+        .lines()
+        .map(|v| v.parse::<i32>().ok())
+        .batching(|it| {
+            let mut sum = None;
+            while let Some(Some(v)) = it.next() {
+                sum = Some(sum.unwrap_or(0) + v);
             }
-            _ => count += line.parse::<i32>().unwrap()
-        }
-    }
-    let sol_a = elfs.values().max().unwrap();
+            sum
+        })
+        .map(Reverse)
+        .k_smallest(3)
+        .map(|x| x.0)
+        .collect::<Vec<i32>>();
+
+    let sol_a = top_elfs.iter().max().unwrap();
     println!("sol_a: {sol_a}");
-
-    let mut values: Vec<i32> = elfs.into_values().collect();
-    values.sort();
-    values.reverse();
-    let sol_b = &values[0..3].iter().sum::<i32>();
+    let sol_b: i32 = top_elfs.iter().sum();
     println!("sol_b: {sol_b}");
-
 }

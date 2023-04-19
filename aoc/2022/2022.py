@@ -1,3 +1,21 @@
+# +
+from string import ascii_letters
+from itertools import islice
+
+
+def batched(iterable, n):
+    "Batch data into tuples of length n. The last batch may be shorter."
+    # batched('ABCDEFG', 3) --> ABC DEF G
+    if n < 1:
+        raise ValueError('n must be at least one')
+    it = iter(iterable)
+    while batch := tuple(islice(it, n)):
+        yield batch
+
+
+
+# -
+
 def solve_01():
     def parse_group(group):
         return [int(i) for i in group]
@@ -54,8 +72,34 @@ def solve_02():
     return sol_a, sol_b
 
 
+def solve_03():
+
+    priority = {j: i for i, j in enumerate(ascii_letters, start=1)}
+
+    def split_compartments(bag):
+        mid_point = len(bag) // 2
+        return (bag[:mid_point], bag[mid_point:])
+
+
+    with open("inputs/day_03.txt") as f:
+        rucksacks = [line.strip() for line in f]
+        
+    def score(group):
+        ch = next(filter(lambda ch: all(ch in chunk for chunk in group[1:]), group[0]))
+        return priority[ch]
+
+    split_rucksacks = (split_compartments(bag) for bag in rucksacks)
+
+    sol_a = sum((score(bag) for bag in split_rucksacks))
+    sol_b = sum((score(group) for group in batched(rucksacks, 3)))
+
+    return sol_a, sol_b   
+
+
+
 if __name__ == "__main__":
     solve_01()
     solve_02()
+    solve_03()
 
 

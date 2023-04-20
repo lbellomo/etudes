@@ -1,10 +1,11 @@
 # +
 import collections
 from string import ascii_letters
-from itertools import islice
+from itertools import islice, groupby
 from functools import partial
 
 
+# recipes from itertools docs
 def batched(iterable, n):
     "Batch data into tuples of length n. The last batch may be shorter."
     # batched('ABCDEFG', 3) --> ABC DEF G
@@ -232,6 +233,63 @@ def solve_06():
     return sol_a, sol_b
 
 
+def solve_07():
+    with open("inputs/day_07.txt") as f:
+        raw_data = [line.strip() for line in f]
+
+    def join_dir(current_dir, path):
+        if current_dir == "/":
+            return f"/{path}"
+        else:
+            return f"{current_dir}/{path}"    
+
+    def change_dir(current_dir, cd): 
+        match cd.split()[-1]:
+            case "/":
+                return "/"
+            case "..":
+                return current_dir.rsplit("/", maxsplit=1)[0]
+            case path:
+                return join_dir(current_dir, path)
+
+    def create_item(current_dir, ls):
+        other_dirs = [join_dir(current_dir, d.split()[-1]) for d in ls if d.startswith("dir")]
+        files = [file for file in ls if not file.startswith(("$", "dir"))]
+
+        return  {
+            "dir": current_dir,
+            "other_dirs": other_dirs,
+            "files": files
+        }    
+
+    def get_size_dir(item):
+        size_files = sum(int(file.split()[0]) for file in item["files"])
+        return size_files + sum(get_size_dir(tree[d]) for d in item["other_dirs"]) 
+
+    def make_tree(raw_data):    
+        commands = batched((list(g) for k, g in groupby(raw_data, lambda x: x.startswith("$ ls") or not x.startswith("$"))), 2)
+        current_dir = None
+        tree = dict()       
+
+        for cd_list, ls in commands:
+            for cd in cd_list:
+                current_dir = change_dir(current_dir, cd)
+            tree[current_dir] = create_item(current_dir, ls)
+
+        return tree
+
+    tree = make_tree(raw_data)
+    total_size = 70000000
+    used_size = get_size_dir(tree["/"])
+    free_size = total_size - used_size
+
+    sol_a = sum(filter(lambda size: size < 100000, (get_size_dir(item) for item in tree.values())))
+    sol_b = sorted(filter(lambda size: size + free_size > 30000000, (get_size_dir(item) for item in tree.values())))[0]
+
+    return sol_a, sol_b
+
+
+
 # %%time
 if __name__ == "__main__":
     solve_01()
@@ -240,3 +298,6 @@ if __name__ == "__main__":
     solve_04()
     solve_05()
     solve_06()
+    solve_07()
+
+

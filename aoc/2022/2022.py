@@ -2,7 +2,6 @@
 from string import ascii_letters
 from itertools import islice
 from functools import partial
-from queue import LifoQueue
 
 
 def batched(iterable, n):
@@ -68,8 +67,8 @@ def solve_02():
     def predict_shape(game):
         """Predcit which shape we need to play to archive the
         expected result
-        
-        Meanings: 
+
+        Meanings:
          X -> lose
          Y -> draw
          Z -> win
@@ -162,11 +161,11 @@ def solve_05():
         crates = dict()
 
         for col in raw_crates:
-            queue = LifoQueue()
+            queue = list()
             col_id = col[-1]
             col = filter(lambda ch: ch.isalpha(), reversed(col))
             for elem in col:
-                queue.put(elem)
+                queue.append(elem)
 
             crates[col_id] = queue
 
@@ -179,14 +178,14 @@ def solve_05():
     def move_crates_9000(crates, n, id_from, id_to):
         """Move crates in a LIFO way"""
         for _ in range(n):
-            elem = crates[id_from].get()
-            crates[id_to].put(elem)
+            elem = crates[id_from].pop()
+            crates[id_to].append(elem)
 
     def move_crates_9001(crates, n, id_from, id_to):
         """Move crates in chunks (preserving order in the chunk"""
-        elems = [crates[id_from].get() for _ in range(n)]
+        elems = [crates[id_from].pop() for _ in range(n)]
         for elem in reversed(elems):
-            crates[id_to].put(elem)
+            crates[id_to].append(elem)
 
     def solve(move_crates):
         crates = parse_crates(raw_crates)
@@ -194,7 +193,7 @@ def solve_05():
         for (n, id_from, id_to) in procedures:
             move_crates(crates, n, id_from, id_to)
 
-        return "".join([q.get() for q in crates.values()])
+        return "".join([q.pop() for q in crates.values()])
 
     procedures = [parse_procedure(i) for i in raw_procedures.splitlines()]
 

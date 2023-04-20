@@ -1,6 +1,7 @@
 # +
 from string import ascii_letters
 from itertools import islice
+from functools import partial
 
 
 def batched(iterable, n):
@@ -97,9 +98,38 @@ def solve_03():
 
 
 
+def solve_04():
+
+    with open("inputs/day_04.txt") as f:
+        raw_data = [line.strip() for line in f]
+
+    def duple_to_list(duple):
+        x, y = duple.split("-")
+        return list(range(int(x), int(y)+1))
+
+    def is_overlap(pair, fun):
+        a, b = tuple(map(duple_to_list, pair.split(",")))
+        return fun(i in b for i in a) or fun(i in a for i in b)
+
+    is_overlap_all = partial(is_overlap, fun=all)
+    is_overlap_any = partial(is_overlap, fun=any)
+
+    sol_a = sum(map(is_overlap_all, raw_data))
+    sol_b = sum(map(is_overlap_any, raw_data))
+
+    return sol_a, sol_b
+
+
+
+
+sol_a, sol_b
+
+# %%time
 if __name__ == "__main__":
     solve_01()
     solve_02()
     solve_03()
+    solve_04()
+
 
 

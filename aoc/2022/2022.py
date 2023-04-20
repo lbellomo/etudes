@@ -36,6 +36,7 @@ def solve_02():
         games = [line.strip() for line in f]
 
     def points_outcome(game):
+        """Points based on the result of the game"""
         match game.split():
             # win
             case ("A", "Y") | ("B", "Z") | ("C", "X"):
@@ -48,21 +49,31 @@ def solve_02():
                 return 0
 
     def points_shape(game):
+        """Points based on the played shape"""
         match game.split():
+            # rock
             case (_, "X"):
                 return 1
+            # paper
             case (_, "Y"):
                 return 2
+            # scissors
             case (_, "Z"):
                 return 3
 
     def points(game):
+        """Total points for a game"""
         return points_outcome(game) + points_shape(game)
 
     def predict_shape(game):
-        # X -> lose
-        # Y -> draw
-        # Z -> win
+        """Predcit which shape we need to play to archive the
+        expected result
+        
+        Meanings: 
+         X -> lose
+         Y -> draw
+         Z -> win
+        """
         match game.split():
             case ("A", "X"):
                 return "A Z"
@@ -94,6 +105,7 @@ def solve_03():
     priority = {j: i for i, j in enumerate(ascii_letters, start=1)}
 
     def split_compartments(bag):
+        """Split bag in half in two compartments"""
         mid_point = len(bag) // 2
         return (bag[:mid_point], bag[mid_point:])
 
@@ -101,6 +113,7 @@ def solve_03():
         rucksacks = [line.strip() for line in f]
 
     def score(group):
+        """Find the score (priority) for the only shared chard in group"""
         ch = next(filter(lambda ch: all(ch in chunk for chunk in group[1:]), group[0]))
         return priority[ch]
 
@@ -122,6 +135,7 @@ def solve_04():
         return list(range(int(x), int(y) + 1))
 
     def is_overlap(pair, fun):
+        """Check if pair overlap depending on fun"""
         a, b = tuple(map(duple_to_list, pair.split(",")))
         return fun(i in b for i in a) or fun(i in a for i in b)
 
@@ -163,11 +177,13 @@ def solve_05():
         return int(n), id_from, id_to
 
     def move_crates_9000(crates, n, id_from, id_to):
+        """Move crates in a LIFO way"""
         for _ in range(n):
             elem = crates[id_from].get()
             crates[id_to].put(elem)
 
     def move_crates_9001(crates, n, id_from, id_to):
+        """Move crates in chunks (preserving order in the chunk"""
         elems = [crates[id_from].get() for _ in range(n)]
         for elem in reversed(elems):
             crates[id_to].put(elem)

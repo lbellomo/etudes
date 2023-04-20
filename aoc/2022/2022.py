@@ -2,6 +2,7 @@
 from string import ascii_letters
 from itertools import islice
 from functools import partial
+from queue import LifoQueue
 
 
 def batched(iterable, n):
@@ -97,7 +98,6 @@ def solve_03():
     return sol_a, sol_b   
 
 
-
 def solve_04():
 
     with open("inputs/day_04.txt") as f:
@@ -121,8 +121,57 @@ def solve_04():
 
 
 
+def solve_05():
+    with open("inputs/day_05.txt") as f:
+        raw_crates, raw_procedures = f.read().split("\n\n")
 
-sol_a, sol_b
+    def parse_crates(raw_crates):    
+        raw_crates = raw_crates.splitlines()
+        raw_crates = filter(lambda col: col[-1] != " ", [[row[i] for row in raw_crates] for i in range(len(raw_crates[0]))])
+
+        crates = dict()
+
+        for col in  raw_crates:
+            queue = LifoQueue()
+            col_id = col[-1]
+            col = filter(lambda ch: ch.isalpha(), reversed(col))
+            for elem in col:
+                queue.put(elem)
+
+            crates[col_id] = queue
+
+        return crates
+
+    def parse_procedure(raw_procedure):
+        _, n, _, id_from, _, id_to = raw_procedure.split()
+        return int(n), id_from, id_to
+
+    def move_crates_9000(crates, n, id_from, id_to):
+        for _ in range(n):
+            elem = crates[id_from].get()
+            crates[id_to].put(elem)
+            
+    def move_crates_9001(crates, n, id_from, id_to):
+        elems = [crates[id_from].get() for _ in range(n)]
+        for elem in reversed(elems):
+            crates[id_to].put(elem)
+
+    def solve(move_crates):
+        crates = parse_crates(raw_crates)
+
+        for (n, id_from, id_to) in procedures:
+            move_crates(crates, n, id_from, id_to)
+
+        return  "".join([q.get() for q in crates.values()])
+
+    procedures = [parse_procedure(i) for i in raw_procedures.splitlines()]
+
+    sol_a = solve(move_crates_9000)
+    sol_b = solve(move_crates_9001)
+
+    return sol_a, sol_b
+
+
 
 # %%time
 if __name__ == "__main__":
@@ -130,6 +179,6 @@ if __name__ == "__main__":
     solve_02()
     solve_03()
     solve_04()
-
+    solve_05()
 
 

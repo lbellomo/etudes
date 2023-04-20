@@ -271,7 +271,7 @@ def solve_07():
         return size_files + sum(get_size_dir(tree[d]) for d in item["other_dirs"]) 
 
     def make_tree(raw_data):
-        """Parse the input to a dict where each value is a dir"""
+        """Parse the input to a dict where each item is a dir"""
         commands = batched((list(g) for k, g in groupby(raw_data, lambda x: x.startswith("$ ls") or not x.startswith("$"))), 2)
         current_dir = None
         tree = dict()       
@@ -294,6 +294,58 @@ def solve_07():
     return sol_a, sol_b
 
 
+def solve_08():
+    with open("inputs/day_08.txt") as f:
+        raw_data = [line.strip() for line in f]
+
+    tree_map = {(i, j): int(ch) for i, row in enumerate(raw_data) for j, ch in enumerate(row)}
+
+    def is_visible_direction(current_tree, i, j, shift_x, shift_y):
+        i, j = i+shift_x, j+shift_y
+        other_tree = tree_map.get((i, j))
+        if other_tree is None:
+            return True
+        elif other_tree >= current_tree:
+            return False
+        else:
+            return is_visible_direction(current_tree, i, j, shift_x, shift_y)
+
+
+    def is_visible(i, j):
+        current_tree = tree_map[(i, j)]
+        return any([
+            is_visible_direction(current_tree, i, j, 1, 0),
+            is_visible_direction(current_tree, i, j, -1, 0),
+            is_visible_direction(current_tree, i, j, 0, 1),
+            is_visible_direction(current_tree, i, j, 0, -1)
+        ])
+
+    def count_tree_direction(current_tree, i, j, shift_x, shift_y):
+        i, j = i+shift_x, j+shift_y
+        other_tree = tree_map.get((i, j))
+        if other_tree is None:
+            return 0
+        elif other_tree >= current_tree:
+            return 1
+        else:
+            return 1 + count_tree_direction(current_tree, i, j, shift_x, shift_y)
+
+
+    def count_tree(i, j):
+        current_tree = tree_map[(i, j)]
+        return (count_tree_direction(current_tree, i, j, 1, 0) * 
+            count_tree_direction(current_tree, i, j, -1, 0) * 
+            count_tree_direction(current_tree, i, j, 0, 1)*
+            count_tree_direction(current_tree, i, j, 0, -1))
+
+    sol_a = sum(is_visible(i, j) for i in range(len(raw_data)) for j in range(len(raw_data[0])))
+    sol_b = max(count_tree(i, j) for i in range(len(raw_data)) for j in range(len(raw_data[0])))
+    
+    return sol_a, sol_b
+
+
+
+
 
 # %%time
 if __name__ == "__main__":
@@ -304,5 +356,6 @@ if __name__ == "__main__":
     solve_05()
     solve_06()
     solve_07()
+    solve_08()
 
 

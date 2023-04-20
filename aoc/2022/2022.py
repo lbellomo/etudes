@@ -238,12 +238,14 @@ def solve_07():
         raw_data = [line.strip() for line in f]
 
     def join_dir(current_dir, path):
+        """Poor man's 'os.path.join'"""
         if current_dir == "/":
             return f"/{path}"
         else:
             return f"{current_dir}/{path}"    
 
-    def change_dir(current_dir, cd): 
+    def change_dir(current_dir, cd):
+        """Update current_dir"""
         match cd.split()[-1]:
             case "/":
                 return "/"
@@ -253,6 +255,7 @@ def solve_07():
                 return join_dir(current_dir, path)
 
     def create_item(current_dir, ls):
+        """Create an dict with the 'ls' info"""
         other_dirs = [join_dir(current_dir, d.split()[-1]) for d in ls if d.startswith("dir")]
         files = [file for file in ls if not file.startswith(("$", "dir"))]
 
@@ -263,10 +266,12 @@ def solve_07():
         }    
 
     def get_size_dir(item):
+        """Recursively navigate the tree calculating the item size"""
         size_files = sum(int(file.split()[0]) for file in item["files"])
         return size_files + sum(get_size_dir(tree[d]) for d in item["other_dirs"]) 
 
-    def make_tree(raw_data):    
+    def make_tree(raw_data):
+        """Parse the input to a dict where each value is a dir"""
         commands = batched((list(g) for k, g in groupby(raw_data, lambda x: x.startswith("$ ls") or not x.startswith("$"))), 2)
         current_dir = None
         tree = dict()       

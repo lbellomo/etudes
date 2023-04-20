@@ -1,4 +1,5 @@
 # +
+import collections
 from string import ascii_letters
 from itertools import islice
 from functools import partial
@@ -12,6 +13,17 @@ def batched(iterable, n):
     it = iter(iterable)
     while batch := tuple(islice(it, n)):
         yield batch
+
+
+def sliding_window(iterable, n):
+    # sliding_window('ABCDEFG', 4) --> ABCD BCDE CDEF DEFG
+    it = iter(iterable)
+    window = collections.deque(islice(it, n), maxlen=n)
+    if len(window) == n:
+        yield tuple(window)
+    for x in it:
+        window.append(x)
+        yield tuple(window)
 
 
 # -
@@ -203,6 +215,23 @@ def solve_05():
     return sol_a, sol_b
 
 
+def solve_06():
+    with open("inputs/day_06.txt") as f:
+        buffer = f.read().strip()
+
+    def solve(buffer, n):
+        return next(
+            i
+            for i, chunk in enumerate(sliding_window(buffer, n), start=n)
+            if len(chunk) == len(set(chunk))
+        )
+
+    sol_a = solve(buffer, 4)
+    sol_b = solve(buffer, 14)
+
+    return sol_a, sol_b
+
+
 # %%time
 if __name__ == "__main__":
     solve_01()
@@ -210,3 +239,4 @@ if __name__ == "__main__":
     solve_03()
     solve_04()
     solve_05()
+    solve_06()

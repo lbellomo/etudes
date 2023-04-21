@@ -1,7 +1,7 @@
 # +
 import collections
 from string import ascii_letters
-from itertools import islice, groupby
+from itertools import islice, groupby, pairwise
 from functools import partial
 
 
@@ -344,8 +344,114 @@ def solve_08():
     return sol_a, sol_b
 
 
+def solve_09():
+    with open("inputs/day_09.txt") as f:
+        raw_data = (line.strip() for line in f)
+        motions = list(map(lambda x: (x[0], int(x[1])), (map(str.split, raw_data))))
+    
+    def update_head(head, direction):
+        xh, yh = head
+
+        # update head
+        match direction:
+            case "U":
+                yh += 1
+            case "D":
+                yh -= 1
+            case "R":
+                xh += 1
+            case "L":
+                xh -= 1
+
+        return (xh, yh) 
+
+    def update_knot(new_head, tail):
+        # i use help from fasterthatlime
+        # https://fasterthanli.me/series/advent-of-code-2022/part-9#part-2
+        xh, yh = new_head
+        xt, yt = tail
+
+        match (xh - xt, yh - yt):
+            case (0, 0) | (0,1) | (1,0) | (0, -1) | (-1, 0):
+                dx, dy = (0, 0)
+            case (1, 1) | (1, -1) | (-1, 1) | (-1, -1):
+                dx, dy = (0, 0)
+            case (0, 2):
+                dx, dy = (0, 1)
+            case (0, -2):
+                dx, dy = (0, -1)
+            case (2, 0):
+                dx, dy = (1, 0)
+            case (-2, 0):
+                dx, dy = (-1, 0)
+            case (2, 1) | (1, 2) | (2, 2):
+                dx, dy = (1, 1)
+            case (2, -1) | (1, -2) | (2, -2):
+                dx, dy = (1, -1)
+            case (-2, 1) | (-1, 2) | (-2, 2):
+                dx, dy = (-1, 1)
+            case (-2, -1) | (-1, -2) | (-2, -2):
+                dx, dy = (-1, -1)
+
+        return xt + dx, yt + dy
+
+    def step_simple(head, tail, direction):        
+        new_head = update_head(head, direction)
+        new_tail = update_knot(new_head, tail)
+
+        return new_head, new_tail
+
+    def move_simple(head, tail, motion, know_pos):
+        direction, n = motion
+        for _ in range(n):
+            head, tail = step_simple(head, tail, direction)
+            know_pos.add(tail)
+
+        return head, tail
 
 
+    def solve_a(motions):
+        head = (0, 0)
+        tail = (0, 0)
+
+        know_pos = set()
+        know_pos.add(tail)
+
+        for motion in motions:
+            head, tail = move_simple(head, tail, motion, know_pos)
+
+        return len(know_pos)
+
+    def step_long(rope, direction):
+        new_rope = [update_head(rope[0], direction)]
+
+        for (head, tail) in pairwise(rope):
+            new_rope.append(update_knot(new_rope[-1], tail))
+
+        return new_rope
+
+    def move_long(rope, motion, know_pos):
+        direction, n = motion
+        for _ in range(n):
+            rope = step_long(rope, direction)
+            know_pos.add(rope[-1])
+
+        return rope
+
+    def solve_b(motions):
+        rope = [(0, 0) for _ in range(10)]
+
+        know_pos = set()
+        know_pos.add(rope[-1])
+
+        for motion in motions:
+            rope = move_long(rope, motion, know_pos)
+        return len(know_pos)
+
+    sol_a = solve_a(motions)
+    sol_b = solve_b(motions)
+
+    return sol_a, sol_b
 
 # %%time
 if __name__ == "__main__":
@@ -357,5 +463,6 @@ if __name__ == "__main__":
     solve_06()
     solve_07()
     solve_08()
+    solve_09()    
 
 

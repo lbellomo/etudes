@@ -453,6 +453,51 @@ def solve_09():
 
     return sol_a, sol_b
 
+
+def solve_10():
+    with open("inputs/day_10.txt") as f:
+        raw_data = [line.strip() for line in f]
+
+    program = list(reversed(list(map(lambda x: x if x.isalpha() else int(x), (i.split()[-1] for i in raw_data)))))
+
+    signal_strength = 1
+    sum_signals_strength = 0
+    instruction = None
+
+    display = list()
+
+    for i in range(1, 241):
+
+        if not instruction:
+            instruction = program.pop()
+            is_new = True
+
+        # in 20, 60, 100, 140, 180, 220
+        if (i - 20) % 40 == 0:  
+            sum_signals_strength += i * signal_strength
+
+        if abs(signal_strength + 1 - (i % 40)) <= 1:
+            ch = "#"
+        else:
+            ch = "."
+
+        display.append(ch)
+
+        match (instruction, is_new):
+            case ("noop", _):
+                instruction = None
+            case (_i, True):
+                is_new = False
+            case (i, False):
+                signal_strength += i
+                instruction = None
+                
+    sol_a = sum_signals_strength 
+    sol_b = ["".join(line) for line in (batched(display, 40))]
+    
+    return sol_a, sol_b
+
+
 # %%time
 if __name__ == "__main__":
     solve_01()
@@ -463,6 +508,9 @@ if __name__ == "__main__":
     solve_06()
     solve_07()
     solve_08()
-    solve_09()    
+    solve_09()   
+    solve_10()
+
+
 
 

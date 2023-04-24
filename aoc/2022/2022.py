@@ -3,7 +3,8 @@ import collections
 from string import ascii_letters
 from itertools import islice, groupby, pairwise
 from functools import partial
-
+from dataclasses import dataclass
+from math import prod
 
 # recipes from itertools docs
 def batched(iterable, n):
@@ -498,6 +499,75 @@ def solve_10():
     return sol_a, sol_b
 
 
+def solve_11():
+
+    with open("inputs/day_11.txt") as f:
+        raw_monkeys = f.read().split("\n\n")
+
+    def make_operation(operation, item):
+        match operation.split():
+            case ["old", "*", "old"]:
+                return item*item
+            case ["old", "*", i]:
+                return item * int(i)
+            case ["old", "+", i]:
+                return item + int(i)    
+
+    @dataclass
+    class Monkey:
+        items: list
+        operation: str
+        test_divisible: int
+        monkey_true: int
+        monkey_false: int
+        inspected_items: int = 0
+
+    def get_last_elem_line(line):
+        return int(line.split()[-1])
+
+    def create_monkey(lines):
+        items = [int(i) for i in lines[1].replace(",", "").split() if i.isnumeric()]
+        operation = lines[2].split("=")[-1].strip()
+        test_divisible = get_last_elem_line(lines[3])
+        monkey_true = get_last_elem_line(lines[4])
+        monkey_false = get_last_elem_line(lines[5])
+
+        return Monkey(items, operation, test_divisible, monkey_true, monkey_false)
+
+    def thrown(monkey, monkeys, divide_worry, prod_divisibles=None):
+        for item in monkey.items:
+            item = make_operation(monkey.operation, item)
+            if divide_worry:
+                item = item // 3
+            else:
+                item = item % prod_divisibles
+
+            if item % monkey.test_divisible == 0:
+                monkeys[monkey.monkey_true].items.append(item)
+            else:
+                monkeys[monkey.monkey_false].items.append(item)
+
+            monkey.inspected_items += 1
+
+        monkey.items = []
+
+    def solve(divide_worry, rounds):
+        monkeys = [create_monkey(monkey.splitlines()) for monkey in raw_monkeys]
+        prod_divisibles = prod(m.test_divisible for m in monkeys)
+
+        for _ in range(rounds):
+            for monkey in monkeys:
+                thrown(monkey, monkeys, divide_worry, prod_divisibles)
+
+        return prod(sorted([m.inspected_items for m in monkeys], reverse=True)[:2])
+
+    sol_a = solve(divide_worry=True, rounds=20)
+    sol_b = solve(divide_worry=False, rounds=10_000)
+
+    return sol_a, sol_b
+
+
+
 # %%time
 if __name__ == "__main__":
     solve_01()
@@ -510,6 +580,7 @@ if __name__ == "__main__":
     solve_08()
     solve_09()   
     solve_10()
+    solve_11()
 
 
 

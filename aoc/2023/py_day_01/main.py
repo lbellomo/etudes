@@ -31,6 +31,7 @@ def check_digit(line: str, numbers: dict[str, str]) -> str:
         for number in numbers:
             if chunk.startswith(number):
                 return numbers[number]
+    raise ValueError
 
 
 def find_first_digit(line: str) -> str:

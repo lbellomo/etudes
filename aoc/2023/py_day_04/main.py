@@ -11,7 +11,7 @@ class Card(NamedTuple):
     numbers: list[int]
 
 
-def parse_card(line):
+def parse_card(line: str) -> Card:
     card_id, win_numbers, numbers = re.split(r":|\|", line)
     card_id = int(card_id.strip("Card").strip())
     win_numbers = [int(i) for i in win_numbers.split()]
@@ -19,11 +19,11 @@ def parse_card(line):
     return Card(card_id, win_numbers, numbers)
 
 
-def count_matches(c):
+def count_matches(c: Card) -> int:
     return sum(True for i in c.numbers if i in c.win_numbers)
 
 
-def calc_points(c):
+def calc_points(c: Card) -> int:
     matches = count_matches(c)
 
     if not matches:

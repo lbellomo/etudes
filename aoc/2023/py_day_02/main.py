@@ -1,11 +1,19 @@
-from collections import namedtuple
 from math import prod
+from typing import NamedTuple
 
 with open("input.txt") as f:
     data = [line.strip() for line in f]
 
-Record = namedtuple("Record", ["red", "green", "blue"])
-Game = namedtuple("Game", ["id", "records"])
+
+class Record(NamedTuple):
+    red: int
+    green: int
+    blue: int
+
+
+class Game(NamedTuple):
+    id: int
+    records: list[Record]
 
 
 def parse_record(raw_record: str) -> Record:
@@ -18,15 +26,15 @@ def parse_record(raw_record: str) -> Record:
 
 
 def parse_game(raw_game: str) -> Game:
-    game_id, rest = raw_game.split(":")
-    _, game_id = game_id.split()
-    game_id = int(game_id)
+    game_id_raw, rest = raw_game.split(":")
+    _, game_id_raw = game_id_raw.split()
+    game_id = int(game_id_raw)
 
     records = [parse_record(record) for record in rest.split(";")]
     return Game(id=game_id, records=records)
 
 
-def check_game(game, limit):
+def check_game(game: Game, limit: Record) -> bool:
     return any(
         (
             record.red > limit.red
@@ -37,7 +45,7 @@ def check_game(game, limit):
     )
 
 
-def power_min_set(game):
+def power_min_set(game: Game) -> int:
     return prod(max(record[i] for record in game.records) for i in range(3))
 
 

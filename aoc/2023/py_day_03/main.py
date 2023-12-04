@@ -13,7 +13,7 @@ size_x = len(data)
 size_y = len(data[0])
 
 
-def point_neighbors(i, j):
+def point_neighbors(i: int, j: int) -> list[str]:
     neighbors = list()
 
     for d_x, d_y in product([-1, 0, 1], repeat=2):
@@ -24,7 +24,7 @@ def point_neighbors(i, j):
     return neighbors
 
 
-def check_number(m, i):
+def check_number(m: re.Match, i: int) -> int:
     for j in range(m.start(), m.end()):
         neighbors = point_neighbors(i, j)
         if any(ch for ch in neighbors if ch in symbols):
@@ -59,13 +59,14 @@ for i, line in enumerate(data):
 p = re.compile(r"\*")
 
 
-def find_hit(i, j):
+def find_hit(i: int, j: int) -> Number | None:
     for n in numbers:
         if (i, j) in n.hitbox:
             return n
+    return None
 
 
-def numbers_neighbors(i, j):
+def numbers_neighbors(i: int, j: int) -> list[Number]:
     neighbors = list()
 
     for d_x, d_y in product([-1, 0, 1], repeat=2):
@@ -81,7 +82,7 @@ def numbers_neighbors(i, j):
     return neighbors
 
 
-def calc_gear_ratio(neighbors):
+def calc_gear_ratio(neighbors: list[Number]) -> int:
     if len(neighbors) == 2:
         return math.prod(n.value for n in neighbors)
     else:

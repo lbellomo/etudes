@@ -134,3 +134,9 @@ Cargo.lock
 Untitled.ipynb
 
 exercism/
+
+# no commit aoc inputs 
+# https://www.reddit.com/r/adventofcode/wiki/faqs/copyright/inputs/
+
+input.txt
+

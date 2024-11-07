@@ -1,5 +1,7 @@
 # Exercise 
 
+Archived because it was moved to another forge.
+
 Things I write to learn something new or to practice.
 
 - [adventure of code](/aoc): Solutions for [aoc](https://adventofcode.com/)
